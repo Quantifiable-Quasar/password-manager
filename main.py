@@ -1,6 +1,47 @@
 #!/usr/bin/env python3
 
-import sql_commands
+import sql
+import encryption
+import sys
+import hashlib
+import getpass
+
+print("I hid the password. Just trust that it is getting recorded.")
+
+def check_pass():
+    try:
+        with open('masterpass.txt', 'rb') as file:
+            master_pass = file.read()
+    except:
+        print("You are missing a master pass file.")
+        print("You need to re-run the program with the -new flag")
+        sys.exit() 
+    for i in range(3):
+        user_password = getpass.getpass("Enter the master password ")
+        if hashlib.sha512(user_password.encode('UTF-8')).hexdigest() == master_pass.decode('UTF-8'):
+            return True
+            break
+        else:
+            print("Incorrect Password!")
+
+if '-new' in sys.argv: 
+    new_master_pass = getpass.getpass("What do you want to be the master pass? ")
+    verify = getpass.getpass("Type that in again. If you loose this the db is gonzo ")
+    if new_master_pass == verify:
+        with open('masterpass.txt', 'wb') as file:
+            file.write(hashlib.sha512(new_master_pass.encode("UTF-8")).hexdigest())
+    else:
+        print("""   Good thing I saved you there with that extra check! 
+        You couldn't even remeber the password for 5 seconds.
+        That database would have been gonzo
+        Not like Anthony Gonzolez either. 
+        It would have just been bad.
+        Luckily for you I added an extra check in there!""")
+    
+    exit
+
+if not check_pass():
+    exit
 
 while True:
     print('\n'+50*'=')
