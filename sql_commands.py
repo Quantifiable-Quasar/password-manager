@@ -2,31 +2,41 @@
 
 import sqlite3
 import password_generator
+import encryption
 
 
 def open_db():
     global c
     global conn
+    
+    try:
+        encryption.decrypt_file('password.db')
+    except:
+        print("Strange, the file is already decrypted.")
 
     # Establish connection to sqlite database
     conn = sqlite3.connect('password.db')
     c = conn.cursor()
 
-    # Create table if db does not exist
+
+def close_db():
+    encryption.encrypt_file('password.db')
+    conn.close()
+
+open_db()
+close_db()
+
+def new_db():
+    conn = sqlite3.connect('password.db')
+    c = conn.cursor()
     c.execute("""CREATE TABLE IF NOT EXISTS passwords (
         id integer PRIMARY KEY,
         service text NOT NULL,
         username text,
         password text,
         url text
-        );""")
-
-def close_db():
-    conn.close()
-
-open_db()
-close_db()
-
+        )""")
+    
 def create():
     open_db()
     c.execute("SELECT * FROM passwords ORDER BY id DESC LIMIT 1;")
@@ -67,7 +77,9 @@ def read(entry=None):
     close_db()
 
 def update():
+
     open_db()
+    
     columns = [ i[0] for i in c.execute("SELECT * FROM passwords").description ]
 
     print("Entries are: ")

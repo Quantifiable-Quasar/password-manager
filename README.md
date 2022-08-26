@@ -14,16 +14,6 @@ As of now the database is horribly unencrypted, and the passwords are recoverabl
 ## What's next for the project?
 
  - Fixing the password generator
- - encrypting the file with an AES key
- - Adding password authentication 
-    - store hashed/salted pass and check against user input
  - cleaning up the open/close functions 
     - they shouldn't be called as often as they are
 
-
-### Random notes for me
-file = open('pass.db')
-conn = sql.open(file)
-
-That way you could decrypt locally without writting the decrypted file to disk
-This may be the decryption solution!

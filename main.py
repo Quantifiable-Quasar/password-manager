@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sql
+import sql_commands
 import encryption
 import sys
 import hashlib
@@ -28,7 +28,7 @@ if '-new' in sys.argv:
     new_master_pass = getpass.getpass("What do you want to be the master pass? ")
     verify = getpass.getpass("Type that in again. If you loose this the db is gonzo ")
     if new_master_pass == verify:
-        with open('masterpass.txt', 'wb') as file:
+        with open('masterpass.txt', 'w') as file:
             file.write(hashlib.sha512(new_master_pass.encode("UTF-8")).hexdigest())
     else:
         print("""   Good thing I saved you there with that extra check! 
@@ -38,10 +38,11 @@ if '-new' in sys.argv:
         It would have just been bad.
         Luckily for you I added an extra check in there!""")
     
+    sql_commands.new_db()
+    encryption.generate_key()
     exit
 
-if not check_pass():
-    exit
+check_pass()
 
 while True:
     print('\n'+50*'=')
